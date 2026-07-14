@@ -1,11 +1,100 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { siAnthropic, siElevenlabs, siVercel, siYcombinator } from "simple-icons";
+import VideoBackground from "./VideoBackground";
 
 const ITEMS = [
   { id: "i", badge: "I", title: "EDUCATION", subtitle: "University / Coursework", rank: 3 },
   { id: "ii", badge: "II", title: "SKILLS", subtitle: "Frontend / Design / UI", rank: 4 },
   { id: "iii", badge: "III", title: "PROJECTS", subtitle: "Featured Work", rank: 5 },
   { id: "iv", badge: "IV", title: "EXPERIENCE", subtitle: "Internships / Roles", rank: 2 },
+];
+
+const PRIZE_ITEMS = [
+  { id: "rank-1", badge: "I", title: "FIRST PLACE", subtitle: "Rank 1", rank: 1 },
+  { id: "rank-2", badge: "II", title: "SECOND PLACE", subtitle: "Rank 2", rank: 2 },
+  { id: "rank-3", badge: "III", title: "THIRD PLACE", subtitle: "Rank 3", rank: 3 },
+];
+
+const MARK_ITEMS = [
+  { id: "code", badge: "I", title: "CODE", subtitle: "Functionality / Quality", rank: 1 },
+  { id: "design", badge: "II", title: "DESIGN", subtitle: "Experience / Craft", rank: 2 },
+  { id: "idea", badge: "III", title: "IDEA", subtitle: "Originality / Impact", rank: 3 },
+  { id: "demo", badge: "IV", title: "DEMO", subtitle: "Story / Delivery", rank: 4 },
+  { id: "extra", badge: "V", title: "EXTRA POINTS", subtitle: "Ambition / Delight", rank: 5 },
+];
+
+const SCHEDULE_ITEMS = [
+  { id: "saturday", badge: "SAT", title: "SATURDAY", subtitle: "25 JULY · BUILD DAY", rank: 1 },
+  { id: "sunday", badge: "SUN", title: "SUNDAY", subtitle: "26 JULY · DEMO DAY", rank: 2 },
+];
+
+const SCHEDULE_DETAILS = [
+  {
+    date: "SATURDAY 25 JULY",
+    label: "BUILD DAY",
+    events: [
+      { time: "10:00", title: "DOORS OPEN + CHECK-IN", note: "REGISTRATION DESK" },
+      { time: "10:30", title: "OPENING BRIEF", note: "RULES, TRACKS + PRIZES" },
+      { time: "11:00", title: "TEAM LOCK", note: "FINALISE YOUR SQUAD" },
+      { time: "11:15", title: "BUILD STARTS", note: "HACKATHON CLOCK LIVE" },
+      { time: "13:00", title: "LUNCH", note: "FOOD + SPONSOR TABLES" },
+      { time: "15:00", title: "MENTOR OFFICE HOURS", note: "TECH, DESIGN + CLINICAL" },
+      { time: "19:00", title: "DINNER + CHECKPOINT", note: "SHOW WHAT YOU HAVE" },
+    ],
+  },
+  {
+    date: "SUNDAY 26 JULY",
+    label: "DEMO DAY",
+    events: [
+      { time: "08:00", title: "BREAKFAST", note: "BUILDERS RECHARGE" },
+      { time: "09:00", title: "FINAL MENTOR SPRINT", note: "LAST TECH CHECKS" },
+      { time: "12:00", title: "SUBMISSIONS CLOSE", note: "GITHUB + DEMO VIDEO" },
+      { time: "12:15", title: "LUNCH + REHEARSAL", note: "PREP YOUR PITCH" },
+      { time: "14:00", title: "LIVE DEMOS", note: "JUDGING BEGINS" },
+      { time: "16:30", title: "JUDGES DELIBERATE", note: "FINAL SCORING" },
+      { time: "17:00", title: "PRIZES + CLOSING", note: "WINNERS ANNOUNCED" },
+    ],
+  },
+];
+
+const MARK_DETAILS = [
+  {
+    intro: "JUDGES WILL LOOK FOR",
+    criteria: ["A WORKING, RELIABLE PRODUCT", "TECHNICAL AMBITION", "CLEAR AND MAINTAINABLE IMPLEMENTATION"],
+  },
+  {
+    intro: "JUDGES WILL LOOK FOR",
+    criteria: ["A CLEAR, INTUITIVE EXPERIENCE", "COHESIVE VISUAL CRAFT", "ACCESSIBLE AND THOUGHTFUL INTERACTIONS"],
+  },
+  {
+    intro: "JUDGES WILL LOOK FOR",
+    criteria: ["A REAL CONSUMER HEALTH NEED", "ORIGINALITY OF THE APPROACH", "POTENTIAL USER IMPACT"],
+  },
+  {
+    intro: "JUDGES WILL LOOK FOR",
+    criteria: ["A SIMPLE, COMPELLING STORY", "A POLISHED LIVE WALKTHROUGH", "A CLEAR EXPLANATION OF THE OUTCOME"],
+  },
+  {
+    intro: "BONUS CREDIT FOR",
+    criteria: ["CREATIVE USE OF SPONSOR TOOLS", "SURPRISE AND DELIGHT", "THOUGHTFUL STRETCH FEATURES"],
+  },
+];
+
+const PRIZE_ICONS = [
+  [
+    { id: "anthropic", label: "Anthropic", icon: siAnthropic },
+    { id: "vercel", label: "Vercel", icon: siVercel },
+    { id: "elevenlabs", label: "ElevenLabs", icon: siElevenlabs },
+    { id: "yc", label: "Y Combinator", icon: siYcombinator },
+  ],
+  [
+    { id: "anthropic", label: "Anthropic", icon: siAnthropic },
+    { id: "monitor", label: "Monitor", monitor: true },
+  ],
+  [
+    { id: "anthropic", label: "Anthropic", icon: siAnthropic },
+  ],
 ];
 
 const EDUCATION_ROWS = [
@@ -15,9 +104,32 @@ const EDUCATION_ROWS = [
   { index: "04", title: "Capstone Prep", status: "Pending" },
 ];
 
-export default function ResumePage({ src }) {
+function PrizeLogo({ prize }) {
+  if (prize.monitor) {
+    return (
+      <svg className="prize-logo-icon" viewBox="0 0 24 24" role="img" aria-label={prize.label}>
+        <title>{prize.label}</title>
+        <path d="M2.75 3.5h18.5A1.75 1.75 0 0 1 23 5.25v11.5a1.75 1.75 0 0 1-1.75 1.75h-7.5v1.5h3.5v1.5H6.75V20h3.5v-1.5h-7.5A1.75 1.75 0 0 1 1 16.75V5.25A1.75 1.75 0 0 1 2.75 3.5Zm0 1.5a.25.25 0 0 0-.25.25v10.5c0 .14.11.25.25.25h18.5c.14 0 .25-.11.25-.25V5.25a.25.25 0 0 0-.25-.25H2.75Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg className="prize-logo-icon" viewBox="0 0 24 24" role="img" aria-label={prize.label}>
+      <title>{prize.label}</title>
+      <path d={prize.icon.path} />
+    </svg>
+  );
+}
+
+export default function ResumePage({ mode = "resume" }) {
   const navigate = useNavigate();
-  const [active, setActive] = useState(1);
+  const isPrizes = mode === "prizes";
+  const isMarkScheme = mode === "mark-scheme";
+  const isSchedule = mode === "schedule";
+  const items = isPrizes ? PRIZE_ITEMS : isMarkScheme ? MARK_ITEMS : isSchedule ? SCHEDULE_ITEMS : ITEMS;
+  const maxIndex = items.length - 1;
+  const [active, setActive] = useState(() => isPrizes || isMarkScheme || isSchedule ? 0 : 1);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -28,21 +140,19 @@ export default function ResumePage({ src }) {
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "ArrowUp") setActive((i) => Math.max(0, i - 1));
-      if (e.key === "ArrowDown") setActive((i) => Math.min(ITEMS.length - 1, i + 1));
+      if (e.key === "ArrowDown") setActive((i) => Math.min(maxIndex, i + 1));
       if (e.key === "ArrowLeft") navigate(-1);
       if (e.key === "Escape" || e.key === "Backspace") navigate(-1);
     };
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [navigate]);
+  }, [maxIndex, navigate]);
 
   return (
     <div id="menu-screen">
-      <video src={src} autoPlay loop muted playsInline />
-      <div className="resume-entry-mask" aria-hidden="true">
-        <video className="resume-entry-video" src={src} autoPlay loop muted playsInline />
-      </div>
+      <VideoBackground />
+      <div className="resume-entry-mask" aria-hidden="true" />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&display=swap');
 
@@ -57,17 +167,10 @@ export default function ResumePage({ src }) {
           pointer-events: none;
         }
 
-        .resume-entry-video {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
         @keyframes resume-entry-reveal {
           from { clip-path: circle(0 at 50% 50%); }
-          to { clip-path: circle(150vmax at 50% 50%); }
+          85% { opacity: 1; }
+          to { clip-path: circle(150vmax at 50% 50%); opacity: 0; }
         }
 
         .resume-overlay {
@@ -105,6 +208,11 @@ export default function ResumePage({ src }) {
         .resume-list-tag.mounted {
           opacity: 1;
           transform: translateX(0);
+        }
+
+        .resume-list-tag.mark-scheme {
+          font-size: clamp(58px, 6.4vw, 92px);
+          white-space: nowrap;
         }
 
         .resume-card-wrap {
@@ -368,15 +476,382 @@ export default function ResumePage({ src }) {
           color: #edfaff;
         }
 
+        .prize-logo-grid {
+          position: relative;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+          margin-top: 22px;
+        }
+
+        .prize-logo-grid.single {
+          grid-template-columns: 1fr;
+        }
+
+        .prize-logo-card {
+          min-height: 154px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          background: rgba(5, 13, 57, 0.97);
+          clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+          box-shadow: inset 0 0 0 1px rgba(145, 239, 255, 0.22);
+          transition: transform 0.18s ease, color 0.18s ease, background 0.18s ease;
+        }
+
+        .prize-logo-grid.single .prize-logo-card {
+          min-height: 330px;
+        }
+
+        .prize-logo-card:hover {
+          color: #8ef5ff;
+          background: rgba(12, 26, 94, 1);
+          transform: translateY(-4px);
+        }
+
+        .prize-logo-icon {
+          width: min(84px, 55%);
+          height: min(84px, 55%);
+          fill: currentColor;
+        }
+
+        .mark-detail-intro {
+          position: relative;
+          margin: 22px 0 14px;
+          color: #8ef5ff;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 20px;
+          letter-spacing: 3px;
+        }
+
+        .mark-criteria {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          counter-reset: mark-criterion;
+        }
+
+        .mark-criterion {
+          counter-increment: mark-criterion;
+          min-height: 104px;
+          display: grid;
+          grid-template-columns: 62px 1fr;
+          align-items: center;
+          gap: 18px;
+          padding: 14px 20px;
+          color: #ffffff;
+          background: rgba(5, 13, 57, 0.97);
+          clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+          box-shadow: inset 0 0 0 1px rgba(145, 239, 255, 0.2);
+          font-family: 'Anton', sans-serif;
+          font-size: clamp(20px, 2vw, 29px);
+          line-height: 1.05;
+        }
+
+        .mark-criterion::before {
+          content: counter(mark-criterion, decimal-leading-zero);
+          color: #ff2a2a;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 40px;
+        }
+
+        .resume-stack.schedule {
+          top: 15vh;
+          width: min(45vw, 690px);
+          gap: 18px;
+        }
+
+        .resume-list-tag.schedule {
+          font-size: clamp(62px, 7vw, 100px);
+          white-space: nowrap;
+        }
+
+        .resume-card-wrap.schedule .resume-card {
+          height: 142px;
+        }
+
+        .resume-card-wrap.schedule .resume-card-inner {
+          padding-top: 20px;
+        }
+
+        .resume-card-wrap.schedule .resume-badge {
+          width: 72px;
+          height: 82px;
+          left: -14px;
+        }
+
+        .resume-card-wrap.schedule .resume-badge-text {
+          font-size: 28px;
+        }
+
+        .resume-card-wrap.schedule .resume-title {
+          font-size: clamp(48px, 5vw, 68px);
+        }
+
+        .schedule-detail-panel {
+          top: 5vh;
+          min-height: 90vh;
+          padding: 18px 22px 20px;
+        }
+
+        .schedule-detail-panel .resume-detail-top {
+          min-height: 82px;
+        }
+
+        .schedule-detail-panel .resume-detail-top-title {
+          font-size: clamp(30px, 3vw, 42px);
+        }
+
+        .schedule-timezone {
+          position: relative;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: 14px 2px 9px;
+          color: #8ef5ff;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 16px;
+          letter-spacing: 2.4px;
+        }
+
+        .schedule-timezone strong {
+          color: #ffffff;
+          font-weight: 400;
+        }
+
+        .schedule-agenda {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+        }
+
+        .schedule-event {
+          min-height: 54px;
+          display: grid;
+          grid-template-columns: 76px 1fr;
+          align-items: center;
+          gap: 14px;
+          padding: 7px 14px;
+          background: rgba(5, 13, 57, 0.96);
+          clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+          box-shadow: inset 0 0 0 1px rgba(145, 239, 255, 0.16);
+          transition: transform 160ms ease, background 160ms ease;
+        }
+
+        .schedule-event:hover {
+          background: rgba(12, 26, 94, 1);
+          transform: translateX(4px);
+        }
+
+        .schedule-event-time {
+          color: #07143f;
+          background: #8ef5ff;
+          padding: 7px 8px;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 22px;
+          letter-spacing: 1px;
+          text-align: center;
+          clip-path: polygon(0 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+        }
+
+        .schedule-event-title {
+          display: block;
+          color: #ffffff;
+          font-family: 'Anton', sans-serif;
+          font-size: 21px;
+          line-height: 1;
+        }
+
+        .schedule-event-note {
+          display: block;
+          margin-top: 4px;
+          color: rgba(255, 255, 255, 0.54);
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 12px;
+          letter-spacing: 1.6px;
+        }
+
+        @media (max-width: 700px) {
+          .resume-overlay {
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: max(18px, env(safe-area-inset-top)) 12px max(72px, env(safe-area-inset-bottom));
+            pointer-events: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .resume-stack,
+          .resume-stack.schedule {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 100%;
+            gap: 8px;
+            transform: none;
+            pointer-events: auto;
+          }
+
+          .resume-list-tag,
+          .resume-list-tag.mark-scheme,
+          .resume-list-tag.schedule {
+            margin: 0 0 8px 5px;
+            font-size: clamp(43px, 14vw, 60px);
+            line-height: 0.9;
+            white-space: normal;
+          }
+
+          .resume-card-wrap {
+            width: 100%;
+            min-height: 78px;
+          }
+
+          .resume-card,
+          .resume-card-wrap.schedule .resume-card {
+            height: 88px;
+            clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
+          }
+
+          .resume-card-wrap.active .resume-card {
+            box-shadow: 6px 6px 0 #d63232;
+            transform: translateX(2px);
+          }
+
+          .resume-card-inner,
+          .resume-card-wrap.schedule .resume-card-inner {
+            padding: 11px 12px 11px 52px;
+          }
+
+          .resume-badge,
+          .resume-card-wrap.schedule .resume-badge {
+            top: 8px;
+            left: -4px;
+            width: 48px;
+            height: 56px;
+          }
+
+          .resume-badge-text,
+          .resume-card-wrap.schedule .resume-badge-text {
+            font-size: 25px;
+          }
+
+          .resume-title,
+          .resume-card-wrap.schedule .resume-title {
+            max-width: 72%;
+            overflow: hidden;
+            font-size: clamp(29px, 8.5vw, 39px);
+            line-height: 0.94;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .resume-rank { gap: 5px; }
+          .resume-rank-label { font-size: 14px; letter-spacing: 1px; }
+          .resume-rank-number { font-size: 42px; }
+
+          .resume-subtitle-bar {
+            left: 52px;
+            right: 8px;
+            bottom: 8px;
+            height: 25px;
+            padding: 0 10px;
+          }
+
+          .resume-subtitle {
+            max-width: 100%;
+            overflow: hidden;
+            font-size: 17px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .resume-detail-panel,
+          .schedule-detail-panel {
+            position: relative;
+            top: auto;
+            right: auto;
+            width: 100%;
+            min-height: 0;
+            margin: 20px 0 0;
+            padding: 14px 14px 20px;
+            overflow: visible;
+            box-shadow: 7px 7px 0 rgba(0, 6, 30, 0.55);
+          }
+
+          .resume-detail-top,
+          .schedule-detail-panel .resume-detail-top {
+            min-height: 66px;
+            grid-template-columns: 42px minmax(0, 1fr) auto;
+            gap: 8px;
+            padding: 8px 11px;
+            box-shadow: 6px 0 0 rgba(255, 94, 136, 0.88);
+          }
+
+          .resume-detail-top-index { font-size: 30px; }
+          .resume-detail-top-title,
+          .schedule-detail-panel .resume-detail-top-title {
+            overflow-wrap: anywhere;
+            font-size: clamp(22px, 7vw, 31px);
+          }
+          .resume-detail-top-progress { font-size: 24px; }
+
+          .prize-logo-grid { gap: 9px; margin-top: 14px; }
+          .prize-logo-card { min-height: 112px; }
+          .prize-logo-grid.single .prize-logo-card { min-height: 180px; }
+          .prize-logo-icon { width: 58px; height: 58px; }
+
+          .mark-detail-intro { margin: 16px 0 10px; font-size: 16px; }
+          .mark-criteria { gap: 9px; }
+          .mark-criterion {
+            min-height: 74px;
+            grid-template-columns: 42px 1fr;
+            gap: 8px;
+            padding: 10px 12px;
+            font-size: 19px;
+          }
+          .mark-criterion::before { font-size: 28px; }
+
+          .schedule-timezone {
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            letter-spacing: 1.3px;
+          }
+
+          .schedule-agenda { gap: 8px; }
+          .schedule-event {
+            min-height: 68px;
+            grid-template-columns: 64px 1fr;
+            gap: 10px;
+            padding: 8px 10px;
+          }
+          .schedule-event-time { padding: 7px 5px; font-size: 19px; }
+          .schedule-event-title { font-size: 18px; }
+          .schedule-event-note { font-size: 10px; letter-spacing: 1px; }
+
+          .resume-detail-row {
+            grid-template-columns: 38px 1fr;
+            min-height: 64px;
+            gap: 8px;
+            padding: 8px 10px;
+          }
+          .resume-detail-row-title { font-size: 21px; }
+          .resume-detail-status { grid-column: 2; width: fit-content; font-size: 16px; }
+        }
+
       `}</style>
 
       <div className="resume-overlay">
-        <div className="resume-stack">
-          <div className={`resume-list-tag${mounted ? " mounted" : ""}`}>LIST</div>
-          {ITEMS.map((item, index) => (
+        <div className={`resume-stack${isSchedule ? " schedule" : ""}`}>
+          <div className={`resume-list-tag${isMarkScheme ? " mark-scheme" : ""}${isSchedule ? " schedule" : ""}${mounted ? " mounted" : ""}`}>
+            {isMarkScheme ? "MARK SCHEME" : isSchedule ? "SCHEDULE" : "LIST"}
+          </div>
+          {items.map((item, index) => (
             <div
               key={item.id}
-              className={`resume-card-wrap${active === index ? " active" : ""}${mounted ? " mounted" : ""}`}
+              className={`resume-card-wrap${isSchedule ? " schedule" : ""}${active === index ? " active" : ""}${mounted ? " mounted" : ""}`}
               style={{ transitionDelay: `${index * 55}ms` }}
               onMouseEnter={() => {
                 setActive(index);
@@ -392,7 +867,7 @@ export default function ResumePage({ src }) {
                 <div className="resume-card-inner">
                   <div className="resume-title">{item.title}</div>
                   <div className="resume-rank">
-                    <div className="resume-rank-label">RANK</div>
+                    <div className="resume-rank-label">{isSchedule ? "DAY" : "RANK"}</div>
                     <div className="resume-rank-number">{item.rank}</div>
                   </div>
                 </div>
@@ -404,7 +879,69 @@ export default function ResumePage({ src }) {
           ))}
         </div>
 
-        {active === 0 && (
+        {isPrizes && (
+          <div className="resume-detail-panel">
+            <div className="resume-detail-top">
+              <div className="resume-detail-top-index">{String(active + 1).padStart(2, "0")}</div>
+              <div className="resume-detail-top-title">RANK {active + 1}</div>
+              <div className="resume-detail-top-progress">{active + 1}/3</div>
+            </div>
+
+            <div className={`prize-logo-grid${PRIZE_ICONS[active].length === 1 ? " single" : ""}`}>
+              {PRIZE_ICONS[active].map((prize) => (
+                <div className="prize-logo-card" key={prize.id}>
+                  <PrizeLogo prize={prize} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isMarkScheme && (
+          <div className="resume-detail-panel">
+            <div className="resume-detail-top">
+              <div className="resume-detail-top-index">{String(active + 1).padStart(2, "0")}</div>
+              <div className="resume-detail-top-title">{MARK_ITEMS[active].title}</div>
+              <div className="resume-detail-top-progress">{active + 1}/5</div>
+            </div>
+
+            <div className="mark-detail-intro">{MARK_DETAILS[active].intro}</div>
+            <div className="mark-criteria">
+              {MARK_DETAILS[active].criteria.map((criterion) => (
+                <div className="mark-criterion" key={criterion}>{criterion}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isSchedule && (
+          <div className="resume-detail-panel schedule-detail-panel">
+            <div className="resume-detail-top">
+              <div className="resume-detail-top-index">{String(active + 1).padStart(2, "0")}</div>
+              <div className="resume-detail-top-title">{SCHEDULE_DETAILS[active].date}</div>
+              <div className="resume-detail-top-progress">{active + 1}/2</div>
+            </div>
+
+            <div className="schedule-timezone">
+              <span>{SCHEDULE_DETAILS[active].label}</span>
+              <strong>ALL TIMES GMT</strong>
+            </div>
+
+            <div className="schedule-agenda">
+              {SCHEDULE_DETAILS[active].events.map((event) => (
+                <div className="schedule-event" key={`${event.time}-${event.title}`}>
+                  <time className="schedule-event-time">{event.time}</time>
+                  <div>
+                    <span className="schedule-event-title">{event.title}</span>
+                    <span className="schedule-event-note">{event.note}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!isPrizes && !isMarkScheme && !isSchedule && active === 0 && (
           <div className="resume-detail-panel">
             <div className="resume-detail-top">
               <div className="resume-detail-top-index">01</div>

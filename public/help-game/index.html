@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Support Lab RPG</title>
+    <style>
+      html, body, #game { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #06163d; }
+      body { display: grid; place-items: center; }
+      #game { display: grid; place-items: center; }
+      html, body, canvas {
+        cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M12 2h8v10h10v8H20v10h-8V20H2v-8h10z' fill='%23fff' stroke='%2307133d' stroke-width='2'/%3E%3Cpath d='M14 4h4v10h10v4H18v10h-4V18H4v-4h10z' fill='%23ff2a2a'/%3E%3C/svg%3E") 16 16, crosshair !important;
+      }
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+        object-fit: contain;
+        image-rendering: pixelated;
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script src="./p5.min.js"></script>
+    <script>
+      window.addEventListener("keydown", (event) => {
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "W", "A", "S", "D", " "].includes(event.key)) {
+          event.preventDefault();
+        }
+      });
+
+      const mobileKeyCodes = { w: 87, a: 65, s: 83, d: 68 };
+      window.addEventListener("message", (event) => {
+        if (event.data?.type === "open-support-ticket" && event.origin === window.location.origin) {
+          window.parent.postMessage({ type: "open-support-ticket" }, "*");
+          return;
+        }
+        if (event.data?.type !== "medical-game-key") return;
+        const key = String(event.data.key || "").toLowerCase();
+        const keyCode = mobileKeyCodes[key];
+        if (!keyCode) return;
+        const eventType = event.data.eventType === "keyup" ? "keyup" : "keydown";
+        window.dispatchEvent(new KeyboardEvent(eventType, {
+          key,
+          code: `Key${key.toUpperCase()}`,
+          keyCode,
+          which: keyCode,
+          bubbles: true,
+          cancelable: true,
+        }));
+      });
+    </script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

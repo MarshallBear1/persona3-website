@@ -9,6 +9,11 @@ html, body, #root {
   height: 100%;
 }
 
+img,
+video {
+  filter: grayscale(100%);
+}
+
 body {
   background: #000;
   overflow: hidden;

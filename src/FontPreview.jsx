@@ -6,9 +6,9 @@ const FONTS = [
   { name: "Bebas Neue",           family: "'Bebas Neue', sans-serif" },
 ];
 
-const LABELS = ["ABOUT ME", "RESUME", "GITHUB LINK", "SOCIALS", "SIDE PROJECTS"];
-const SIZES  = [54, 44, 36, 44, 36];
-const SKEWS  = [-6, -11, -16, -3, -4];
+const LABELS = ["BRIEF", "TEAMS", "MARK SCHEME", "PRIZES", "SCHEDULE", "CLAIM FREE CREDITS", "HELP"];
+const SIZES  = [54, 48, 36, 48, 40, 30, 44];
+const SKEWS  = [-6, -11, 0, -3, -4, -7, -2];
 
 export default function FontPreview() {
   return (

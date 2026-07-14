@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import VideoBackground from './VideoBackground'
 
-export default function VideoPage({ src }) {
+export default function VideoPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -14,7 +15,7 @@ export default function VideoPage({ src }) {
 
   return (
     <div id="menu-screen">
-      <video src={src} autoPlay loop muted playsInline />
+      <VideoBackground />
     </div>
   )
 }
